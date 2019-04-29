@@ -71,13 +71,24 @@
         "metadata": {
           "description": "Location for all resources."
         }
+      },
+      "adminUsername": {
+        "type": "securestring",
+        "metadata": {
+          "description": "uname"
+        }
+      },
+      "adminPassword": {
+        "type": "securestring",
+        "metadata": {
+          "description": "pw"
+        }
       }
     },
     "variables": {
       "diagStorageAccountName": "[concat(uniquestring(resourceGroup().id), 'specvm')]",
       "subnetRef": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'),  parameters('subnetName'))]",
       "nicName": "nic",
-      "publicIPAddressName": "publicIp",
       "diskName": "[concat(parameters('vmName'), '-disk')]"
     },
     "resources": [
@@ -108,9 +119,6 @@
         "type": "Microsoft.Network/networkInterfaces",
         "name": "[variables('nicName')]",
         "location": "[parameters('location')]",
-        "dependsOn": [
-          "[variables('publicIPAddressName')]"
-        ],
         "tags": {
           "displayName": "NetworkInterface"
         },
@@ -143,10 +151,14 @@
           "hardwareProfile": {
             "vmSize": "[parameters('vmSize')]"
           },
+          "osProfile": {
+            "computerName": "[parameters('vmName')]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "adminPassword": "[parameters('adminPassword')]"
+          },
           "storageProfile": {
             "imageReference": {
               "id": "[parameters('managedImageID')]"
-            }
             }
           },
           "networkProfile": {
